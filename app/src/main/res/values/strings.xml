@@ -1,0 +1,27 @@
+<resources>
+
+    <!-- General Strings -->
+    <string name="app_name">The Room</string>
+
+    <!-- Login Activity -->
+    <string name="login_button_label">Login</string>
+
+    <!-- Main Activity -->
+    <string name="new_chat_button_label">New Chat</string>
+    <string name="coversations_button_label">Conversations</string>
+    <string name="settings_button_label">Settings</string>
+
+    <!-- New Chat Activity -->
+    <string name="new_chat_activity_title">New Chat</string>
+    <string name="new_chat_text">Looking for new user...</string>
+
+    <!-- Conversation List Activity -->
+    <string name="conversation_list_activity_title">Conversations</string>
+
+    <!-- Settings Activity -->
+    <string name="settings_activity_title">Settings</string>
+
+    <!-- Chat Activity -->
+    <string name="chat_activity_title">Chat with %1$s</string>
+
+</resources>
