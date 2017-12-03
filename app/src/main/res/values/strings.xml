@@ -4,7 +4,7 @@
     <string name="app_name">The Room</string>
 
     <!-- Login Activity -->
-    <string name="login_button_label">Login</string>
+    <string name="login_status_text">Signing in...</string>
 
     <!-- Main Activity -->
     <string name="new_chat_button_label">New Chat</string>
@@ -26,5 +26,8 @@
 
     <!-- Empty List View -->
     <string name="empty_list_text">No conversations. Select \'New Chat\' from the main menu to start one.</string>
+
+    <!-- Main Menu -->
+    <string name="sign_out">Sign Out</string>
 
 </resources>

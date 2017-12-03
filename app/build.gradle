@@ -27,7 +27,12 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 //    implementation 'com.android.support:recyclerview-v7:27.0.2'
     compile 'com.marshalchen.ultimaterecyclerview:library:0.7.3'
+    compile 'com.google.firebase:firebase-auth:11.6.2'
+    compile 'com.google.android.gms:play-services-auth:11.6.2'
 }
+
+// required for firebase
+apply plugin: 'com.google.gms.google-services'
 
 // resolve conflicting support library versions
 // https://stackoverflow.com/questions/43280871/android-getting-manifest-merger-failed-error-after-update-to-new-version-of-grad

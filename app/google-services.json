@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1020845010670",
+    "firebase_url": "https://the-room-6c596.firebaseio.com",
+    "project_id": "the-room-6c596",
+    "storage_bucket": "the-room-6c596.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1020845010670:android:b78fa6f4d142c55d",
+        "android_client_info": {
+          "package_name": "com.example.android.theroom"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1020845010670-agiqu06siipvul9ui5hpfep3sbvquken.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.android.theroom",
+            "certificate_hash": "053c2203846656ee5d72b60a94d1ce83d40af208"
+          }
+        },
+        {
+          "client_id": "1020845010670-f403uaheoshue9erd5ke8fgt6bui41dv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmEse2gh_-n_uyt2_ZT4RvVUioDscHAck"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1020845010670-f403uaheoshue9erd5ke8fgt6bui41dv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
