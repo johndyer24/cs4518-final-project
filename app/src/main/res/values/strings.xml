@@ -24,4 +24,7 @@
     <!-- Chat Activity -->
     <string name="chat_activity_title">Chat with %1$s</string>
 
+    <!-- Empty List View -->
+    <string name="empty_list_text">No conversations. Select \'New Chat\' from the main menu to start one.</string>
+
 </resources>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.android.theroom">
 
     <application
@@ -19,11 +20,12 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".NewChatActivity" android:label="@string/new_chat_activity_title"/>
         <activity
-            android:name=".CoversationListActivity"
+            android:name=".ConversationListActivity"
             android:label="@string/conversation_list_activity_title" />
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/settings_activity_title" />
+            android:label="@string/settings_activity_title">
+        </activity>
         <activity
             android:name=".ChatActivity"
             android:label="@string/chat_activity_title" />

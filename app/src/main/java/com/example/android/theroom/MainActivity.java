@@ -2,7 +2,6 @@ package com.example.android.theroom;
 
 import android.content.Context;
 import android.content.Intent;
-import android.provider.Telephony;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -38,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
      * @param v
      */
     public void viewConversations(View v) {
-        Intent i = CoversationListActivity.newIntent(this);
+        Intent i = ConversationListActivity.newIntent(this);
         startActivity(i);
     }
 
