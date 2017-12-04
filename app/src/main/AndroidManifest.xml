@@ -25,14 +25,14 @@
             android:name=".ConversationListActivity"
             android:label="@string/conversation_list_activity_title" />
         <activity
+            android:name=".ProfileActivity"
+            android:label="@string/profile_activity_title" />
+        <activity
             android:name=".SettingsActivity"
-            android:label="@string/settings_activity_title"></activity>
+            android:label="@string/settings_activity_title" />
         <activity
             android:name=".ChatActivity"
             android:label="@string/chat_activity_title" />
-        <activity
-            android:name=".ProfileActivity"
-            android:label="@string/profile_activity_title"/>
     </application>
 
 </manifest>
