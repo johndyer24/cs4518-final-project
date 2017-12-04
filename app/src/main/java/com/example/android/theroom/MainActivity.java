@@ -31,13 +31,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
+        inflater.inflate(R.menu.main_option_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.settings:
+                viewSettings();
+                return true;
             case R.id.sign_out:
                 signOut();
                 return true;
@@ -65,10 +68,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * onClick handler for settings button, starts SettingsActivity
+     * onClick handler for settings button, starts ProfileActivity
      * @param v
      */
-    public void viewSettings(View v) {
+    public void viewProfile(View v) {
+        Intent i = ProfileActivity.newIntent(this);
+        startActivity(i);
+    }
+
+    /**
+     * Navigate to SettingsActivity
+     */
+    public void viewSettings() {
         Intent i = SettingsActivity.newIntent(this);
         startActivity(i);
     }

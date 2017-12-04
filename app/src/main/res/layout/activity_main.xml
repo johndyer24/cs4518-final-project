@@ -30,8 +30,8 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/settings_button_label"
-            android:onClick="viewSettings"
+            android:text="@string/profile_button_label"
+            android:onClick="viewProfile"
             android:layout_margin="8dp"/>
 
     </LinearLayout>

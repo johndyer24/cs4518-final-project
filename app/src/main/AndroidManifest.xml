@@ -18,18 +18,21 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" />
-        <activity android:name=".NewChatActivity" android:label="@string/new_chat_activity_title"/>
+        <activity
+            android:name=".NewChatActivity"
+            android:label="@string/new_chat_activity_title" />
         <activity
             android:name=".ConversationListActivity"
             android:label="@string/conversation_list_activity_title" />
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/settings_activity_title">
-        </activity>
+            android:label="@string/settings_activity_title"></activity>
         <activity
             android:name=".ChatActivity"
             android:label="@string/chat_activity_title" />
-
+        <activity
+            android:name=".ProfileActivity"
+            android:label="@string/profile_activity_title"/>
     </application>
 
 </manifest>

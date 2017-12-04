@@ -9,7 +9,7 @@
     <!-- Main Activity -->
     <string name="new_chat_button_label">New Chat</string>
     <string name="coversations_button_label">Conversations</string>
-    <string name="settings_button_label">Settings</string>
+    <string name="profile_button_label">Profile</string>
 
     <!-- New Chat Activity -->
     <string name="new_chat_activity_title">New Chat</string>
@@ -17,6 +17,9 @@
 
     <!-- Conversation List Activity -->
     <string name="conversation_list_activity_title">Conversations</string>
+
+    <!-- Profile Activity -->
+    <string name="profile_activity_title">Profile</string>
 
     <!-- Settings Activity -->
     <string name="settings_activity_title">Settings</string>
@@ -27,7 +30,8 @@
     <!-- Empty List View -->
     <string name="empty_list_text">No conversations. Select \'New Chat\' from the main menu to start one.</string>
 
-    <!-- Main Menu -->
+    <!-- Main Option Menu -->
+    <string name="settings">Settings</string>
     <string name="sign_out">Sign Out</string>
 
 </resources>
