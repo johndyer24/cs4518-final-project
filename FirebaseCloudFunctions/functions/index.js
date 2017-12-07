@@ -12,10 +12,15 @@ const db = admin.database();
  */
 exports.pairUsers = functions.database.ref('chatRequests').onWrite((event) => {
 
+  console.log('pairUsers is starting');
+
   db.ref('pairUsersFunctionRan').once('value').then((snapshot) => {
     if (snapshot.exists()) {
       return db.ref('pairUsersFunctionRan').set(null);
     } else {
+
+      console.log('pairUsers running once');
+
       let requests = event.data.val(); // get object containing list of request objects
       for (let key in requests) {
         requests[key].requestID = key;
@@ -33,6 +38,7 @@ exports.pairUsers = functions.database.ref('chatRequests').onWrite((event) => {
         updates['userChats/' + requests[i+1].userID + '/' + newChatID] = true;
       }
 
+      updates
       const rootNode = event.data.ref.parent;
       return rootNode.update(updates);
     }

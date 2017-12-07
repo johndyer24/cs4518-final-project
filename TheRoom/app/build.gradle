@@ -32,9 +32,6 @@ dependencies {
     compile 'com.google.android.gms:play-services-auth:11.6.2'
 }
 
-// required for firebase
-apply plugin: 'com.google.gms.google-services'
-
 // resolve conflicting support library versions
 // https://stackoverflow.com/questions/43280871/android-getting-manifest-merger-failed-error-after-update-to-new-version-of-grad
 configurations.all {
@@ -47,3 +44,7 @@ configurations.all {
         }
     }
 }
+
+
+// required for firebase
+apply plugin: 'com.google.gms.google-services'

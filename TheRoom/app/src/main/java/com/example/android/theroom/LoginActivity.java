@@ -55,6 +55,16 @@ public class LoginActivity extends AppCompatActivity {
         mLoginStatusTextView = (TextView) findViewById(R.id.login_status_text);
         mLoginStatusTextView.setVisibility(View.GONE);
 
+        // Configure sign-in to request the user's ID, email address, and basic
+        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        // Build a GoogleSignInClient with the options specified by gso.
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
         mGoogleLoginButton = (SignInButton) findViewById(R.id.google_login_button);
         mGoogleLoginButton.setVisibility(View.GONE); // hide login button until auth status is checked
         mGoogleLoginButton.setSize(SignInButton.SIZE_STANDARD);
@@ -67,16 +77,6 @@ public class LoginActivity extends AppCompatActivity {
                 mLoginStatusTextView.setVisibility(View.VISIBLE);
             }
         });
-
-        // Configure sign-in to request the user's ID, email address, and basic
-        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-
-        // Build a GoogleSignInClient with the options specified by gso.
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         mAuth = FirebaseAuth.getInstance();
     }
@@ -114,6 +114,11 @@ public class LoginActivity extends AppCompatActivity {
                 // The ApiException status code indicates the detailed failure reason.
                 // Please refer to the GoogleSignInStatusCodes class reference for more information.
                 Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+                Log.w(TAG, "signInResult:failed message=" + e.getMessage());
+                StackTraceElement[] stackTrace = e.getStackTrace();
+                for (StackTraceElement s : stackTrace) {
+                    Log.w(TAG, s.toString());
+                }
                 Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                 mLoginStatusTextView.setVisibility(View.GONE);
                 mGoogleLoginButton.setVisibility(View.VISIBLE);
