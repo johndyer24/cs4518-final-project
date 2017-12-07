@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -15,6 +16,8 @@ import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 public class NewChatActivity extends AppCompatActivity {
+
+    private final String TAG = "NewChatActivity";
 
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
@@ -35,13 +38,16 @@ public class NewChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_chat);
 
+        // get references to database and auth object
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
 
+        // check whether we have already sent a chat request
         userID = mAuth.getUid();
         mDatabase.child("users/" + userID + "/requestedChat").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                // if we haven't already sent a chat request, create a new one
                 if (!dataSnapshot.exists()) {
                     mDatabase.child("users/" + userID + "/requestedChat").setValue(true);
                     String newRequestKey = mDatabase.child("chatRequests").push().getKey();
@@ -56,41 +62,47 @@ public class NewChatActivity extends AppCompatActivity {
             }
         });
 
-        mChildEventListener = new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                goToChat();
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-
-        mDatabase.child("userChats/" + userID).addChildEventListener(mChildEventListener);
 
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        mDatabase.child("userChats/" + userID).addChildEventListener(mChildEventListener);
+        if (mChildEventListener == null) {
+            mChildEventListener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    Log.d(TAG, dataSnapshot.getChildrenCount() + " children in snapshot");
+                    for (DataSnapshot chat: dataSnapshot.getChildren()) {
+                        String key = (String) chat.getKey();
+                        Long startTime = (Long) chat.getValue();
+                        Log.d(TAG, "chat: " + key + ": " + startTime);
+                    }
+                    goToChat();
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            };
+            mDatabase.child("userChats/" + userID).addChildEventListener(mChildEventListener);
+        }
     }
 
     @Override
@@ -101,9 +113,12 @@ public class NewChatActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Navigate to Chat Activity
+     */
     private void goToChat() {
         Intent i = ChatActivity.newIntent(this);
         startActivity(i);
-        finish();
+        finish(); // finish Activity so that user can't navigate back
     }
 }
