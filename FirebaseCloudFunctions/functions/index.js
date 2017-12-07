@@ -1,12 +1,15 @@
+// import required modules
 const functions = require('firebase-functions');
+const admin = require('firebase-admin'); // The Firebase Admin SDK to access the Firebase Realtime Database.
+const _ = require('lodash');
 
-// The Firebase Admin SDK to access the Firebase Realtime Database.
-const admin = require('firebase-admin');
+// setup app
 admin.initializeApp(functions.config().firebase);
 const db = admin.database();
 
-const _ = require('lodash');
-
+/**
+ * Function that pairs users who have requested to chat
+ */
 exports.pairUsers = functions.database.ref('chatRequests').onWrite((event) => {
 
   db.ref('pairUsersFunctionRan').once('value').then((snapshot) => {
