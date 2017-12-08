@@ -11,9 +11,15 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.*;
+//import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+//import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
@@ -30,7 +36,7 @@ public class LoginActivity extends AppCompatActivity {
     private final String TAG = "LoginActivity";
     private final int REQUEST_SIGN_IN = 0;
 
-    private GoogleSignInClient mGoogleSignInClient;
+    //private Faceboo mGoogleSignInClient;
     private FirebaseAuth mAuth;
     private SignInButton mGoogleLoginButton;
     private TextView mLoginStatusTextView;
@@ -50,11 +56,46 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        boolean loggedIn = AccessToken.getCurrentAccessToken() == null;
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
+
         setContentView(R.layout.activity_login);
+
+        CallbackManager callbackManager = CallbackManager.Factory.create();
 
         mLoginStatusTextView = (TextView) findViewById(R.id.login_status_text);
         mLoginStatusTextView.setVisibility(View.GONE);
 
+
+
+        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton.setReadPermissions("email");
+        // If using in a fragment
+        //loginButton.setFragment(this);
+
+
+        callbackManager = CallbackManager.Factory.create();
+
+        LoginManager.getInstance().registerCallback(callbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        // App code
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        // App code
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        // App code
+                    }
+                });
+        /*
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -71,12 +112,12 @@ public class LoginActivity extends AppCompatActivity {
         mGoogleLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-                startActivityForResult(signInIntent, REQUEST_SIGN_IN);
+                //Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+                //startActivityForResult(signInIntent, REQUEST_SIGN_IN);
                 mGoogleLoginButton.setVisibility(View.GONE); // hide login button while signing in
                 mLoginStatusTextView.setVisibility(View.VISIBLE);
             }
-        });
+        });*/
 
         mAuth = FirebaseAuth.getInstance();
     }
@@ -87,20 +128,20 @@ public class LoginActivity extends AppCompatActivity {
 
         // Check if user is signed in (non-null)
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        /*GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         if (currentUser != null && account != null) {
             // if user is already signed in start MainActivity
             viewMainMenu();
         } else {
             // otherwise display login button
             mGoogleLoginButton.setVisibility(View.VISIBLE);
-        }
+        }*/
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+/*
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == REQUEST_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
@@ -123,7 +164,7 @@ public class LoginActivity extends AppCompatActivity {
                 mLoginStatusTextView.setVisibility(View.GONE);
                 mGoogleLoginButton.setVisibility(View.VISIBLE);
             }
-        }
+        }*/
     }
 
     /**

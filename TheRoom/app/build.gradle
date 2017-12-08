@@ -29,7 +29,8 @@ dependencies {
     compile 'com.marshalchen.ultimaterecyclerview:library:0.7.3'
     compile 'com.google.firebase:firebase-auth:11.6.2'
     compile 'com.google.firebase:firebase-database:11.6.2'
-    compile 'com.google.android.gms:play-services-auth:11.6.2'
+    implementation 'com.facebook.android:facebook-login:[4,5)'
+    //compile 'com.google.android.gms:play-services-auth:11.6.2'
 }
 
 // resolve conflicting support library versions
