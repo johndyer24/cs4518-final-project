@@ -47,6 +47,10 @@ exports.pairUsers = functions.database.ref('chatRequests/{reqID}').onCreate((eve
         // add users to newly created chat
         updates['userChats/' + requests[i].userID + '/' + newChatID] = true;
         updates['userChats/' + requests[i+1].userID + '/' + newChatID] = true;
+
+        // notify users of the new chat
+        updates['newUserChats/' + requests[i].userID] = newChatID;
+        updates['newUserChats/' + requests[i+1].userID] = newChatID;
       }
     } else {
       console.log('PAIR USERS: no users to pair');

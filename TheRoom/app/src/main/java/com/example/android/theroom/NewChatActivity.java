@@ -24,8 +24,7 @@ public class NewChatActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
     private String userID;
-    private ChildEventListener mChildEventListener;
-    private HashSet<String> mUserChats; // IDs of chats the user is in
+    private ValueEventListener mValueEventListener;
 
     /**
      * Static method that returns intent used to start MainActivity
@@ -72,64 +71,31 @@ public class NewChatActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
 
-        // get IDs of all chats the user is in
-        mUserChats = new HashSet<>();
-        mDatabase.child("userChats/" + userID).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // add all chat IDs to the set
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    mUserChats.add(snapshot.getKey());
+        // set child event listener on newUserChats listening for a new chat
+        if (mValueEventListener == null) {
+            mValueEventListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Log.d(TAG, "Chat " + dataSnapshot.getValue());
+
+                    // make sure value isn't null before starting ChatActivity
+                    if (dataSnapshot.exists()) {
+                        Log.d(TAG, "New chat, navigating to Chat Activity");
+                        // chat has been seen by user, remove it from newUserChats
+                        mDatabase.child("newUserChats/" + userID).setValue(null);
+                        goToChat();
+                    }
                 }
 
-                // set child event listener on userChats listening for a new chat
-                if (mChildEventListener == null) {
-                    mChildEventListener = new ChildEventListener() {
-                        @Override
-                        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                            Log.d(TAG, "Chat " + dataSnapshot.getKey() + ": " + dataSnapshot.getValue());
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-                            // make sure chat is a new one before starting ChatActivity
-                            // onChildAdded is triggered whenever the listener is attached,
-                            // not just when a new chat is added
-                            if (!mUserChats.contains(dataSnapshot.getKey())) {
-                                Log.d(TAG, "New chat, navigating to Chat Activity");
-                                goToChat();
-                            }
-                        }
-
-                        @Override
-                        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                        }
-
-                        @Override
-                        public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                        }
-
-                        @Override
-                        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    };
-
-                    // start event listener
-                    mDatabase.child("userChats/" + userID).addChildEventListener(mChildEventListener);
                 }
+            };
 
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+            // start event listener
+            mDatabase.child("newUserChats/" + userID).addValueEventListener(mValueEventListener);
+        }
     }
 
     @Override
@@ -137,8 +103,8 @@ public class NewChatActivity extends AppCompatActivity {
         super.onStop();
 
         // remove child event listener listening for new chats
-        if (mChildEventListener != null) {
-            mDatabase.child("userChats/" + userID).removeEventListener(mChildEventListener);
+        if (mValueEventListener != null) {
+            mDatabase.child("newUserChats/" + userID).removeEventListener(mValueEventListener);
         }
     }
 
