@@ -4,19 +4,38 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.example.android.theroom.models.Chat;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerView;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerviewViewHolder;
 import com.marshalchen.ultimaterecyclerview.UltimateViewAdapter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ConversationListActivity extends AppCompatActivity {
+
+    private final String TAG = "ConversationList";
 
     private UltimateRecyclerView mConversationRecyclerView;
     private ConversationAdapter mAdapter;
+    private DatabaseReference mDatabase;
+    private FirebaseAuth mAuth;
+    private ValueEventListener mValueEventListener;
+    private List<Chat> mChatList;
 
     /**
      * Static method that returns intent used to start MainActivity
@@ -32,19 +51,113 @@ public class ConversationListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_coversation_list);
 
-        mAdapter = new ConversationAdapter();
+        // get references to database and auth object
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mAuth = FirebaseAuth.getInstance();
+
+        // setup Adapter and RecyclerView
+        mChatList = new ArrayList<>();
+        mAdapter = new ConversationAdapter(mChatList);
         mConversationRecyclerView = findViewById(R.id.conversation_recycler_view);
+        final LinearLayoutManager manager = new LinearLayoutManager(this);
+        mConversationRecyclerView.setLayoutManager(manager);
         mConversationRecyclerView.setAdapter(mAdapter);
+
+        // show loading message while pulling data from firebase
+        mConversationRecyclerView.setEmptyView(R.layout.loading_list_view, UltimateRecyclerView.STARTWITH_OFFLINE_ITEMS);
+        mConversationRecyclerView.showEmptyView();
     }
 
-    private class ConversationHolder extends UltimateRecyclerviewViewHolder implements View.OnClickListener{
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // add value event listener for user's chats
+        if (mValueEventListener == null) {
+            mValueEventListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (mChatList == null) {
+                        mChatList = new ArrayList<>();
+                    }
+                    mChatList.clear();
+                    Log.d(TAG, "Num Chats: " + dataSnapshot.getChildrenCount());
+
+                    // if there are no chats, show empty view
+                    if (!dataSnapshot.exists() || dataSnapshot.getChildrenCount() <= 0) {
+                        Log.d(TAG, "snapshot does not exist");
+                        mConversationRecyclerView.setEmptyView(R.layout.empty_list_view, UltimateRecyclerView.STARTWITH_OFFLINE_ITEMS);
+                        mConversationRecyclerView.showEmptyView();
+                        return;
+                    }
+
+                    // otherwise, pull chat information from firebase and add Chat to Adapter
+                    for (DataSnapshot d : dataSnapshot.getChildren()) {
+                        mDatabase.getRef().child("chats/" + d.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot ds) {
+                                Chat c = ds.getValue(Chat.class);
+                                Log.d(TAG, "Chat start time: " + c.getStartTime());
+                                mChatList.add(c);
+                                Log.d(TAG, "Num Chats in list: " + mChatList.size());
+                                mAdapter.setChats(mChatList);
+                                mAdapter.notifyDataSetChanged();
+                                Log.d(TAG, "Num Chats in adapter: " + mAdapter.getItemCount());
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            };
+            // start event listener
+            mDatabase.child("userChats/" + mAuth.getUid()).addValueEventListener(mValueEventListener);
+        }
+
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        // stop event listener
+        mDatabase.child("userChats/" + mAuth.getUid()).removeEventListener(mValueEventListener);
+    }
+
+    /**
+     * The RecyclerView Viewholder
+     */
+    private class ConversationHolder extends UltimateRecyclerviewViewHolder implements View.OnClickListener {
+
+        private TextView mTextView;
+        private Chat mChat;
+        private int mPosition;
 
         public ConversationHolder(View itemView) {
             super(itemView);
+
+            mTextView = (TextView) itemView.findViewById(R.id.conversation_list_row_textview);
+            itemView.setOnClickListener(this);
         }
 
-        public void bind() {
-
+        /**
+         * Used by Conversation Adapter to bind Chat object to the View
+         * @param chat
+         * @param position
+         */
+        public void bind(Chat chat, int position) {
+            mChat = chat;
+            mTextView.setText(getString(R.string.conversation_list_row_start_time_text, mChat.getStartTime()));
+            mPosition = position;
         }
 
         @Override
@@ -53,11 +166,27 @@ public class ConversationListActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * The RecyclerView Adapter
+     */
     private class ConversationAdapter extends UltimateViewAdapter<ConversationHolder> {
+
+        private List<Chat> mChats;
+
+        public ConversationAdapter(List<Chat> chats) {
+            mChats = chats;
+        }
+
+        public void setChats(List<Chat> chats) {
+            mChats = chats;
+        }
 
         @Override
         public ConversationHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return null;
+            View v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.conversation_list_row, parent, false);
+            ConversationHolder vh = new ConversationHolder(v);
+            return vh;
         }
 
         @Override
@@ -72,16 +201,19 @@ public class ConversationListActivity extends AppCompatActivity {
 
         @Override
         public ConversationHolder onCreateViewHolder(ViewGroup parent) {
-            return null;
+            View v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.conversation_list_row, parent, false);
+            ConversationHolder vh = new ConversationHolder(v);
+            return vh;
         }
 
         @Override
         public void onBindViewHolder(ConversationHolder holder, int position) {
-            holder.bind();
+            holder.bind(mChats.get(position), position);
         }
 
         @Override
-        public RecyclerView.ViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
+        public ConversationHolder onCreateHeaderViewHolder(ViewGroup parent) {
             return null;
         }
 
@@ -92,12 +224,20 @@ public class ConversationListActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return 0;
+            if (mChats == null) {
+                return 0;
+            } else {
+                return mChats.size();
+            }
         }
 
         @Override
         public int getAdapterItemCount() {
-            return 0;
+            if (mChats == null) {
+                return 0;
+            } else {
+                return mChats.size();
+            }
         }
 
         @Override
