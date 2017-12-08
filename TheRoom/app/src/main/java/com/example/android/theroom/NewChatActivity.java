@@ -83,6 +83,8 @@ public class NewChatActivity extends AppCompatActivity {
                         Log.d(TAG, "New chat, navigating to Chat Activity");
                         // chat has been seen by user, remove it from newUserChats
                         mDatabase.child("newUserChats/" + userID).setValue(null);
+                        // allow user to create new requests
+                        mDatabase.child("users/" + userID + "/requestedChat").setValue(null);
                         goToChat();
                     }
                 }

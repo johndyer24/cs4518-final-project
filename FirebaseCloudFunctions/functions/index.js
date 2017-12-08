@@ -35,8 +35,6 @@ exports.pairUsers = functions.database.ref('chatRequests/{reqID}').onCreate((eve
       // iterate over requests and pair users
       for (let i = 0; i < requests.length - 1; i += 2) {
         // delete chat requests
-        updates['users/' + requests[i].userID + '/requestedChat'] = null;
-        updates['users/' + requests[i+1].userID + '/requestedChat'] = null;
         updates['chatRequests/' + requests[i].requestID] = null;
         updates['chatRequests/' + requests[i+1].requestID] = null;
 
