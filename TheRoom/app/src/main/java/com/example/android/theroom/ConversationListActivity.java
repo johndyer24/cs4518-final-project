@@ -31,6 +31,7 @@ public class ConversationListActivity extends AppCompatActivity {
     private final String TAG = "ConversationList";
 
     private UltimateRecyclerView mConversationRecyclerView;
+    private TextView mLoadingTextView;
     private ConversationAdapter mAdapter;
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
@@ -59,13 +60,13 @@ public class ConversationListActivity extends AppCompatActivity {
         mChatList = new ArrayList<>();
         mAdapter = new ConversationAdapter(mChatList);
         mConversationRecyclerView = findViewById(R.id.conversation_recycler_view);
+        mLoadingTextView = (TextView) findViewById(R.id.loading_list_text);
         final LinearLayoutManager manager = new LinearLayoutManager(this);
         mConversationRecyclerView.setLayoutManager(manager);
         mConversationRecyclerView.setAdapter(mAdapter);
 
-        // show loading message while pulling data from firebase
-        mConversationRecyclerView.setEmptyView(R.layout.loading_list_view, UltimateRecyclerView.STARTWITH_OFFLINE_ITEMS);
-        mConversationRecyclerView.showEmptyView();
+        // hide RecyclerView and show loading message while pulling data from firebase
+        mConversationRecyclerView.setVisibility(View.GONE);
     }
 
     @Override
@@ -83,7 +84,11 @@ public class ConversationListActivity extends AppCompatActivity {
                     mChatList.clear();
                     Log.d(TAG, "Num Chats: " + dataSnapshot.getChildrenCount());
 
-                    // if there are no chats, show empty view
+                    // hide loading message and show RecyclerView
+                    mLoadingTextView.setVisibility(View.GONE);
+                    mConversationRecyclerView.setVisibility(View.VISIBLE);
+
+                    // if there are no chats, show RecyclerView with empty view
                     if (!dataSnapshot.exists() || dataSnapshot.getChildrenCount() <= 0) {
                         Log.d(TAG, "snapshot does not exist");
                         mConversationRecyclerView.setEmptyView(R.layout.empty_list_view, UltimateRecyclerView.STARTWITH_OFFLINE_ITEMS);

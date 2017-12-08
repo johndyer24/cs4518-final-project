@@ -18,6 +18,7 @@
     <!-- Conversation List Activity -->
     <string name="conversation_list_activity_title">Conversations</string>
     <string name="conversation_list_row_start_time_text">Start Time: %1$d</string>
+    <string name="loading_list_text">Loading Conversations...</string>
 
     <!-- Profile Activity -->
     <string name="profile_activity_title">Profile</string>
@@ -31,10 +32,6 @@
 
     <!-- Empty List View -->
     <string name="empty_list_text">No conversations. Select \'New Chat\' from the main menu to start one.</string>
-
-    <!-- Loading List View -->
-    <string name="loading_list_text">Loading Conversations...</string>
-
 
     <!-- Main Option Menu -->
     <string name="settings">Settings</string>

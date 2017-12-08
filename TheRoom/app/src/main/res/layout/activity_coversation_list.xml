@@ -9,12 +9,28 @@
 
 <!--</android.support.v7.widget.RecyclerView>-->
 
-<com.marshalchen.ultimaterecyclerview.UltimateRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/conversation_recycler_view"
-    android:layout_width="match_parent"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
     tools:context="com.example.android.theroom.ConversationListActivity">
-    <!--app:recyclerviewEmptyView="@layout/empty_list_view">-->
 
-</com.marshalchen.ultimaterecyclerview.UltimateRecyclerView>
+    <com.marshalchen.ultimaterecyclerview.UltimateRecyclerView
+        android:id="@+id/conversation_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </com.marshalchen.ultimaterecyclerview.UltimateRecyclerView>
+
+    <TextView
+        android:id="@+id/loading_list_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/loading_list_text"/>
+
+</LinearLayout>
+
