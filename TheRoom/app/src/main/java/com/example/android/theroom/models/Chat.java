@@ -4,8 +4,6 @@ package com.example.android.theroom.models;
  * Created by johndyer on 12/8/17.
  */
 
-import java.util.List;
-
 /**
  * Class that represents a Chat object
  */
