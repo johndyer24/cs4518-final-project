@@ -103,6 +103,8 @@ public class ConversationListActivity extends AppCompatActivity {
                             public void onDataChange(DataSnapshot ds) {
                                 Chat c = ds.getValue(Chat.class);
                                 Log.d(TAG, "Chat start time: " + c.getStartTime());
+                                Log.d(TAG, "Chat user1: " + c.getUser1());
+                                Log.d(TAG, "Chat user2: " + c.getUser2());
                                 mChatList.add(c);
                                 Log.d(TAG, "Num Chats in list: " + mChatList.size());
                                 mAdapter.setChats(mChatList);
@@ -161,7 +163,9 @@ public class ConversationListActivity extends AppCompatActivity {
          */
         public void bind(Chat chat, int position) {
             mChat = chat;
-            mTextView.setText(getString(R.string.conversation_list_row_start_time_text, mChat.getStartTime()));
+            String text = chat.getUser1().equals(mAuth.getUid()) ? chat.getUser2() : chat.getUser1();
+            mTextView.setText(text);
+            //mTextView.setText(getString(R.string.conversation_list_row_start_time_text, mChat.getStartTime()));
             mPosition = position;
         }
 
