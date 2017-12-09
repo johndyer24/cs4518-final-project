@@ -9,6 +9,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
@@ -85,10 +86,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Sign out of firebase, and navigate back to LoginActivity
+     * Sign out of firebase and facebook, and navigate back to LoginActivity
      */
     public void signOut() {
         FirebaseAuth.getInstance().signOut();
+        LoginManager.getInstance().logOut();
         Intent i = LoginActivity.newIntent(this);
         startActivity(i);
     }
