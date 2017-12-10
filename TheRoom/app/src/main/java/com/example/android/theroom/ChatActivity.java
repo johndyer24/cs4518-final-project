@@ -73,7 +73,7 @@ public class ChatActivity extends AppCompatActivity {
         mMessagesList = new ArrayList<>();
         mAdapter = new ChatAdapter(mMessagesList);
         mMessageRecyclerView = findViewById(R.id.message_recycler_view);
-        final LinearLayoutManager manager = new LinearLayoutManager(this);
+        final LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         mMessageRecyclerView.setLayoutManager(manager);
         mMessageRecyclerView.setAdapter(mAdapter);
     }
