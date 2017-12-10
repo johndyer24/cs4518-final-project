@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -36,6 +37,8 @@ import java.util.List;
 public class ChatActivity extends AppCompatActivity {
 
     private static final String MSG = "messages/";
+    private static int NUM_MESSAGES_TO_SHOW_LOCATION_BUTTON = 10;
+
     private String mUserName;
     private String mChatID;
     private ChildEventListener chatListener;
@@ -48,6 +51,7 @@ public class ChatActivity extends AppCompatActivity {
     private List<Message> mMessagesList;
     private ImageButton sendButton;
     private TextView inputText;
+    private Button locationButton;
 
     /**
      * Static method that returns intent used to start MainActivity
@@ -67,6 +71,10 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
         sendButton = findViewById(R.id.sendButton);
         inputText = findViewById(R.id.inputText);
+        locationButton = findViewById(R.id.locationButton);
+        // hide location button until we check how many messages have been sent
+        locationButton.setVisibility(View.GONE);
+
         firebase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
 
@@ -149,6 +157,11 @@ public class ChatActivity extends AppCompatActivity {
         mMessagesList.add(0, message);
         mAdapter.setMessages(mMessagesList);
         mAdapter.notifyDataSetChanged();
+
+        // when users have sent enough messages, give them the option to share their location
+        if (mMessagesList.size() >= NUM_MESSAGES_TO_SHOW_LOCATION_BUTTON) {
+            locationButton.setVisibility(View.VISIBLE);
+        }
     }
 
 
