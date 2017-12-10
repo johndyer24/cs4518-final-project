@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -17,10 +18,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.android.theroom.models.Message;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerView;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerviewViewHolder;
 import com.marshalchen.ultimaterecyclerview.UltimateViewAdapter;
@@ -31,16 +34,19 @@ import java.util.List;
 
 public class ChatActivity extends AppCompatActivity {
 
-    private static final String CHS = "newChat";
+    private static final String MSG = "messages/";
     private String mUserName;
     private String mChatID;
     private ChildEventListener chatListener;
     private DatabaseReference firebase;
+    private FirebaseAuth mAuth;
 
     private UltimateRecyclerView mMessageRecyclerView;
     private TextView mLoadingTextView;
     private ChatAdapter mAdapter;
     private List<Message> mMessagesList;
+    private ImageButton sendButton;
+    private TextView inputText;
 
     /**
      * Static method that returns intent used to start MainActivity
@@ -58,6 +64,10 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        sendButton = findViewById(R.id.sendButton);
+        inputText = findViewById(R.id.inputText);
+        firebase = FirebaseDatabase.getInstance().getReference();
+        mAuth = FirebaseAuth.getInstance();
 
         // get the user's display name and the chatID from the intent
         mUserName = getIntent().getStringExtra("userName");
@@ -82,7 +92,6 @@ public class ChatActivity extends AppCompatActivity {
     protected void onStart(){
         super.onStart();
 
-        firebase = FirebaseDatabase.getInstance().getReference();
         if(chatListener == null) {
             chatListener = new ChildEventListener() {
                 @Override
@@ -113,8 +122,21 @@ public class ChatActivity extends AppCompatActivity {
 
                 }
             };
-            firebase.child("messages/" + mChatID).addChildEventListener(chatListener);
+            firebase.child(MSG + mChatID).addChildEventListener(chatListener);
         }
+
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(inputText.getText() == "") {
+                    String newKey = firebase.child(MSG + mChatID).push().getKey();
+                    firebase.child(MSG + mChatID + "/" + newKey + "/text").setValue(inputText.getText());
+                    firebase.child(MSG + mChatID + "/" + newKey + "/time").setValue(ServerValue.TIMESTAMP);
+                    firebase.child(MSG + mChatID + "/" + newKey + "/userID").setValue(mAuth.getUid());
+                    inputText.setText("");
+                }
+            }
+        });
     }
 
     private void addMessage(Message message) {

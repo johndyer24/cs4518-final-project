@@ -37,14 +37,14 @@
 
 
         <EditText
-            android:id="@+id/textView"
+            android:id="@+id/inputText"
             android:layout_width="0dp"
             android:layout_weight="9"
             android:layout_height="40dp"
             android:hint="Type a message" />
 
         <ImageButton
-            android:id="@+id/imageButton"
+            android:id="@+id/sendButton"
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:layout_weight="1"
