@@ -14,12 +14,13 @@
         android:layout_height="0dp"
         android:layout_weight="10">
 
-        <ImageButton
+        <Button
             android:id="@+id/imageButton2"
             android:layout_gravity="top|right"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/com_facebook_favicon_blue" />
+            android:layout_height="40dp"
+            android:text="Share Location  "
+            android:drawableRight="@drawable/com_facebook_favicon_blue" />
 
         <com.marshalchen.ultimaterecyclerview.UltimateRecyclerView
             android:id="@+id/conversation_recycler_view"
