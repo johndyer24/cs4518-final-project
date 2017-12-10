@@ -23,7 +23,7 @@
             android:drawableRight="@drawable/com_facebook_favicon_blue" />
 
         <com.marshalchen.ultimaterecyclerview.UltimateRecyclerView
-            android:id="@+id/conversation_recycler_view"
+            android:id="@+id/message_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
