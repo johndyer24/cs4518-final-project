@@ -92,7 +92,7 @@ public class ChatActivity extends AppCompatActivity {
         mMessagesList = new ArrayList<>();
         mAdapter = new ChatAdapter(mMessagesList);
         mMessageRecyclerView = findViewById(R.id.message_recycler_view);
-        final LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        final LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         mMessageRecyclerView.setLayoutManager(manager);
         mMessageRecyclerView.setAdapter(mAdapter);
     }
@@ -137,7 +137,7 @@ public class ChatActivity extends AppCompatActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!inputText.getText().toString().equals("")) {
+                if(!inputText.getText().toString().trim().equals("")) {
                     String newKey = firebase.child(MSG + mChatID).push().getKey();
                     firebase.child(MSG + mChatID + "/" + newKey + "/text").setValue(inputText.getText().toString());
                     firebase.child(MSG + mChatID + "/" + newKey + "/time").setValue(ServerValue.TIMESTAMP);
