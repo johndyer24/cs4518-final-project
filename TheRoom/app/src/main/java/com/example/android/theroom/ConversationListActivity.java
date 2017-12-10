@@ -102,6 +102,7 @@ public class ConversationListActivity extends AppCompatActivity {
                             @Override
                             public void onDataChange(DataSnapshot ds) {
                                 Chat c = ds.getValue(Chat.class);
+                                c.setChatID(ds.getKey());
                                 Log.d(TAG, "Chat start time: " + c.getStartTime());
                                 Log.d(TAG, "Chat user1: " + c.getUser1());
                                 Log.d(TAG, "Chat user2: " + c.getUser2());
@@ -171,7 +172,9 @@ public class ConversationListActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View view) {
-
+            // start Chat Activity
+            Intent i = ChatActivity.newIntent(getContext(), mChat.getUser1().equals(mAuth.getUid()) ? mChat.getUser2() : mChat.getUser1(), mChat.getChatID());
+            startActivity(i);
         }
     }
 

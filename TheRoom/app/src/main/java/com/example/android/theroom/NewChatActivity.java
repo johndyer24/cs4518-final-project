@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.android.theroom.models.Chat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -85,7 +86,7 @@ public class NewChatActivity extends AppCompatActivity {
                         mDatabase.child("newUserChats/" + userID).setValue(null);
                         // allow user to create new requests
                         mDatabase.child("users/" + userID + "/requestedChat").setValue(null);
-                        goToChat();
+                        goToChat((String)dataSnapshot.getValue());
                     }
                 }
 
@@ -113,9 +114,22 @@ public class NewChatActivity extends AppCompatActivity {
     /**
      * Navigate to Chat Activity
      */
-    private void goToChat() {
-        Intent i = ChatActivity.newIntent(this);
-        startActivity(i);
-        finish(); // finish Activity so that user can't navigate back
+    private void goToChat(final String chatID) {
+        // get chat info from firebase, in order to pass user's display name to Chat Activity
+        mDatabase.child("chats/" + chatID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Chat c = dataSnapshot.getValue(Chat.class);
+                Intent i = ChatActivity.newIntent(getApplicationContext(), c.getUser1().equals(mAuth.getUid()) ? c.getUser2() : c.getUser1(), chatID);
+                startActivity(i);
+                finish(); // finish Activity so that user can't navigate back
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 }
