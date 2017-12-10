@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -83,7 +84,7 @@ public class ChatActivity extends AppCompatActivity {
         mMessagesList = new ArrayList<>();
         mAdapter = new ChatAdapter(mMessagesList);
         mMessageRecyclerView = findViewById(R.id.message_recycler_view);
-        final LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
+        final LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mMessageRecyclerView.setLayoutManager(manager);
         mMessageRecyclerView.setAdapter(mAdapter);
     }
@@ -128,19 +129,24 @@ public class ChatActivity extends AppCompatActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(inputText.getText() == "") {
+                if(!inputText.getText().toString().equals("")) {
                     String newKey = firebase.child(MSG + mChatID).push().getKey();
-                    firebase.child(MSG + mChatID + "/" + newKey + "/text").setValue(inputText.getText());
+                    firebase.child(MSG + mChatID + "/" + newKey + "/text").setValue(inputText.getText().toString());
                     firebase.child(MSG + mChatID + "/" + newKey + "/time").setValue(ServerValue.TIMESTAMP);
                     firebase.child(MSG + mChatID + "/" + newKey + "/userID").setValue(mAuth.getUid());
                     inputText.setText("");
+
+                    // hide keyboard if it's shown
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 }
             }
         });
     }
 
     private void addMessage(Message message) {
-        mMessagesList.add(message);
+        // add Message to top of list, so that most recent message is always displayed
+        mMessagesList.add(0, message);
         mAdapter.setMessages(mMessagesList);
         mAdapter.notifyDataSetChanged();
     }
