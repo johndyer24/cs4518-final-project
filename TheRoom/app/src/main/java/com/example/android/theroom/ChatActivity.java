@@ -5,11 +5,17 @@ import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import com.google.firebase.*;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DatabaseReference;
 
 public class ChatActivity extends AppCompatActivity {
 
+    private static final String CHS = "newChat";
     private String mUserName;
     private String mChatID;
+    private ChildEventListener chatListener;
+    private DatabaseReference firebase;
 
     /**
      * Static method that returns intent used to start MainActivity
@@ -37,6 +43,14 @@ public class ChatActivity extends AppCompatActivity {
         if (bar != null) {
             bar.setTitle(getString(R.string.chat_activity_title, mUserName));
         }
-
     }
+
+    @Override
+    protected void onStart(){
+        super.onStart();
+
+        firebase.child(CHS );
+    }
+
+    public void addMessage()
 }
