@@ -5,11 +5,12 @@ import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-<<<<<<< HEAD
-import com.google.firebase.*;
+
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-=======
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,13 +19,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.android.theroom.models.Message;
+import com.google.firebase.database.FirebaseDatabase;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerView;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerviewViewHolder;
 import com.marshalchen.ultimaterecyclerview.UltimateViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
->>>>>>> origin/master
+
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -65,15 +67,7 @@ public class ChatActivity extends AppCompatActivity {
         if (bar != null) {
             bar.setTitle(getString(R.string.chat_activity_title, mUserName));
         }
-    }
 
-    @Override
-    protected void onStart(){
-        super.onStart();
-
-<<<<<<< HEAD
-        firebase.child(CHS );
-=======
         // setup Adapter and RecyclerView
         mMessagesList = new ArrayList<>();
         mAdapter = new ChatAdapter(mMessagesList);
@@ -81,9 +75,59 @@ public class ChatActivity extends AppCompatActivity {
         final LinearLayoutManager manager = new LinearLayoutManager(this);
         mMessageRecyclerView.setLayoutManager(manager);
         mMessageRecyclerView.setAdapter(mAdapter);
-
     }
 
+    @Override
+    protected void onStart(){
+        super.onStart();
+
+        firebase = FirebaseDatabase.getInstance().getReference();
+        if(chatListener == null) {
+            firebase.child("messages/" + mChatID).addChildEventListener(chatListener);
+        }
+        chatListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Message message = (Message) dataSnapshot.getValue(Message.class);
+
+                addMessage(message);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+    }
+
+    private void addMessage(Message message) {
+        mMessagesList.add(message);
+        mAdapter.setMessages(mMessagesList);
+        mAdapter.notifyDataSetChanged();
+    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        firebase.child("messages/" + mChatID).removeEventListener(chatListener);
+    }
     /**
      * The RecyclerView Viewholder
      */
@@ -196,9 +240,6 @@ public class ChatActivity extends AppCompatActivity {
         public long generateHeaderId(int position) {
             return 0;
         }
->>>>>>> origin/master
     }
-
-    public void addMessage()
 }
 
