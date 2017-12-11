@@ -106,7 +106,7 @@ public class ConversationListActivity extends AppCompatActivity {
                                 Log.d(TAG, "Chat start time: " + c.getStartTime());
                                 Log.d(TAG, "Chat user1: " + c.getUser1());
                                 Log.d(TAG, "Chat user2: " + c.getUser2());
-                                mChatList.add(c);
+                                mChatList.add(0, c);
                                 Log.d(TAG, "Num Chats in list: " + mChatList.size());
                                 mAdapter.setChats(mChatList);
                                 mAdapter.notifyDataSetChanged();
