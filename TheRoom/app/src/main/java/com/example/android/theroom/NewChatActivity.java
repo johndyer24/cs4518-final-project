@@ -30,6 +30,7 @@ import java.util.HashSet;
 public class NewChatActivity extends AppCompatActivity {
 
     private final String TAG = "NewChatActivity";
+    private static final int REQUEST_LOCATION = 0;
 
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
@@ -123,32 +124,42 @@ public class NewChatActivity extends AppCompatActivity {
 
     private void requestChat() {
 
-        mDatabase.child("users/" + userID + "/requestedChat").setValue(true);
-        String newRequestKey = mDatabase.child("chatRequests").push().getKey();
-        mDatabase.child("chatRequests/" + newRequestKey + "/userID").setValue(userID);
-        mDatabase.child("chatRequests/" + newRequestKey + "/time").setValue(ServerValue.TIMESTAMP);
-//        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, LocationService);
-//        }
-        try {
-            mFusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            // Got last known location. In some rare situations this can be null.
-                            if (location != null) {
-                                Log.d(TAG, "we got a location");
-                                // Logic to handle location object
-                            } else {
-                                Log.d(TAG, "location is null");
-                            }
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, REQUEST_LOCATION);
+        } else {
+            try {
+                mFusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                // Got last known location. In some rare situations this can be null.
+                                if (location != null) {
+                                    Log.d(TAG, "we got a location");
 
-                        }
-                    });
-        } catch (SecurityException e) {
-            Log.e(TAG, e.getMessage());
+                                    mDatabase.child("users/" + userID + "/requestedChat").setValue(true);
+                                    String newRequestKey = mDatabase.child("chatRequests").push().getKey();
+                                    mDatabase.child("chatRequests/" + newRequestKey + "/userID").setValue(userID);
+                                    mDatabase.child("chatRequests/" + newRequestKey + "/time").setValue(ServerValue.TIMESTAMP);
+                                } else {
+                                    Log.d(TAG, "location is null");
+                                }
+
+                            }
+                        });
+            } catch (SecurityException e) {
+                Log.e(TAG, e.getMessage());
+            }
         }
 
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch(requestCode) {
+            case REQUEST_LOCATION:
+                requestChat();
+        }
     }
 
     /**
