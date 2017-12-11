@@ -25,6 +25,17 @@
     <!-- Profile Activity -->
     <string name="profile_activity_title">Profile</string>
     <string name="interests_label">Interests</string>
+    <string name="interests_description">Any interests you select are used to better pair you with other people.</string>
+    <string name="interest1">Interest 1</string>
+    <string name="interest2">Interest 2</string>
+    <string name="interest3">Interest 3</string>
+    <string name="interest4">Interest 4</string>
+    <string name="interest5">Interest 5</string>
+    <string name="interest6">Interest 6</string>
+    <string name="interest7">Interest 7</string>
+    <string name="interest8">Interest 8</string>
+    <string name="interest9">Interest 9</string>
+    <string name="interest10">Interest 10</string>
 
     <!-- Settings Activity -->
     <string name="settings_activity_title">Settings</string>
