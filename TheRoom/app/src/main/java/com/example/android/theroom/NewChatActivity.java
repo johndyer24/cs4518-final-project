@@ -1,12 +1,21 @@
 package com.example.android.theroom;
 
+import android.*;
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.example.android.theroom.models.Chat;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +35,8 @@ public class NewChatActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private String userID;
     private ValueEventListener mValueEventListener;
+    private FusedLocationProviderClient mFusedLocationClient;
+    private Location mLocation;
 
     /**
      * Static method that returns intent used to start MainActivity
@@ -45,6 +56,8 @@ public class NewChatActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
 
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
         // check whether we have already sent a chat request
         userID = mAuth.getUid();
         mDatabase.child("users/" + userID + "/requestedChat").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -52,10 +65,7 @@ public class NewChatActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // if we haven't already sent a chat request, create a new one
                 if (!dataSnapshot.exists()) {
-                    mDatabase.child("users/" + userID + "/requestedChat").setValue(true);
-                    String newRequestKey = mDatabase.child("chatRequests").push().getKey();
-                    mDatabase.child("chatRequests/" + newRequestKey + "/userID").setValue(userID);
-                    mDatabase.child("chatRequests/" + newRequestKey + "/time").setValue(ServerValue.TIMESTAMP);
+                    requestChat();
                 }
             }
 
@@ -109,6 +119,36 @@ public class NewChatActivity extends AppCompatActivity {
         if (mValueEventListener != null) {
             mDatabase.child("newUserChats/" + userID).removeEventListener(mValueEventListener);
         }
+    }
+
+    private void requestChat() {
+
+        mDatabase.child("users/" + userID + "/requestedChat").setValue(true);
+        String newRequestKey = mDatabase.child("chatRequests").push().getKey();
+        mDatabase.child("chatRequests/" + newRequestKey + "/userID").setValue(userID);
+        mDatabase.child("chatRequests/" + newRequestKey + "/time").setValue(ServerValue.TIMESTAMP);
+//        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, LocationService);
+//        }
+        try {
+            mFusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                Log.d(TAG, "we got a location");
+                                // Logic to handle location object
+                            } else {
+                                Log.d(TAG, "location is null");
+                            }
+
+                        }
+                    });
+        } catch (SecurityException e) {
+            Log.e(TAG, e.getMessage());
+        }
+
     }
 
     /**
