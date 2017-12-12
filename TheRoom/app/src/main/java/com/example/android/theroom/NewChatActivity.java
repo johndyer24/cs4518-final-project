@@ -68,7 +68,7 @@ public class NewChatActivity extends AppCompatActivity {
 
         // check whether we have already sent a chat request
         userID = mAuth.getUid();
-        /*
+
         mDatabase.child("users/" + userID + "/requestedChat").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -120,7 +120,7 @@ public class NewChatActivity extends AppCompatActivity {
 
             // start event listener
             mDatabase.child("newUserChats/" + userID).addValueEventListener(mValueEventListener);
-        }*/
+        }
     }
 
     @Override
