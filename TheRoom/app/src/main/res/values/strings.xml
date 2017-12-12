@@ -16,6 +16,7 @@
     <!-- New Chat Activity -->
     <string name="new_chat_activity_title">New Chat</string>
     <string name="new_chat_text">Looking for new user...</string>
+    <string name="new_chat_cancel">Cancel</string>
 
     <!-- Conversation List Activity -->
     <string name="conversation_list_activity_title">Conversations</string>

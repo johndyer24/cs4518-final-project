@@ -12,6 +12,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.example.android.theroom.models.Chat;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -38,7 +40,9 @@ public class NewChatActivity extends AppCompatActivity {
     private String userID;
     private ValueEventListener mValueEventListener;
     private FusedLocationProviderClient mFusedLocationClient;
+    private String newRequestKey;
     private Location mLocation;
+    private Button mCancelButton;
 
     /**
      * Static method that returns intent used to start MainActivity
@@ -60,6 +64,8 @@ public class NewChatActivity extends AppCompatActivity {
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
+        mCancelButton = (Button) findViewById(R.id.cancel_request_button);
+
         // check whether we have already sent a chat request
         userID = mAuth.getUid();
         mDatabase.child("users/" + userID + "/requestedChat").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -68,6 +74,9 @@ public class NewChatActivity extends AppCompatActivity {
                 // if we haven't already sent a chat request, create a new one
                 if (!dataSnapshot.exists()) {
                     requestChat();
+                } else {
+                    newRequestKey = (String) dataSnapshot.getValue();
+                    enableCancelButton(); // add listener for cancel button
                 }
             }
 
@@ -144,8 +153,8 @@ public class NewChatActivity extends AppCompatActivity {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
                                             // finally request a chat with the user's location data
-                                            mDatabase.child("users/" + userID + "/requestedChat").setValue(true);
-                                            String newRequestKey = mDatabase.child("chatRequests").push().getKey();
+                                            newRequestKey = mDatabase.child("chatRequests").push().getKey();
+                                            mDatabase.child("users/" + userID + "/requestedChat").setValue(newRequestKey);
                                             mDatabase.child("chatRequests/" + newRequestKey + "/userID").setValue(userID);
                                             mDatabase.child("chatRequests/" + newRequestKey + "/time").setValue(ServerValue.TIMESTAMP);
                                             mDatabase.child("chatRequests/" + newRequestKey + "/latitude").setValue(l.getLatitude());
@@ -155,6 +164,9 @@ public class NewChatActivity extends AppCompatActivity {
                                             for (DataSnapshot d : dataSnapshot.getChildren()) {
                                                 mDatabase.child("chatRequests/" + newRequestKey + "/interests/" + d.getKey()).setValue(true);
                                             }
+
+                                            // add listener for cancel button
+                                            enableCancelButton();
                                         }
 
                                         @Override
@@ -206,5 +218,21 @@ public class NewChatActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    /**
+     * Sets onClickListener for the cancel button
+     */
+    private void enableCancelButton() {
+        mCancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "newRequestKey: " + newRequestKey);
+                // delete request
+                mDatabase.child("chatRequests/" + newRequestKey).removeValue();
+                mDatabase.child("users/" + userID + "/requestedChat").removeValue();
+                finish(); // close activity
+            }
+        });
     }
 }
