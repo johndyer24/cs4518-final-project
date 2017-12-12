@@ -159,7 +159,7 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         });
-
+        /*
         locationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -183,7 +183,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        });*/
     }
 
     @Override
