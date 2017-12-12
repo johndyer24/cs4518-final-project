@@ -6,6 +6,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.example.android.theroom.models.Popup;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -26,6 +27,7 @@ import android.widget.TextView;
 import com.example.android.theroom.models.Message;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerView;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerviewViewHolder;
 import com.marshalchen.ultimaterecyclerview.UltimateViewAdapter;
@@ -38,12 +40,17 @@ public class ChatActivity extends AppCompatActivity {
 
     private static final String MSG = "messages/";
     private static int NUM_MESSAGES_TO_SHOW_LOCATION_BUTTON = 10;
+    private static int LOCATION = 0;
+    final private FirebaseDatabase database = FirebaseDatabase.getInstance();
+
 
     private String mUserName;
+    private String myUserName;
     private String mChatID;
     private ChildEventListener chatListener;
     private DatabaseReference firebase;
     private FirebaseAuth mAuth;
+    private boolean wantLocation;
 
     private UltimateRecyclerView mMessageRecyclerView;
     private TextView mLoadingTextView;
@@ -52,6 +59,7 @@ public class ChatActivity extends AppCompatActivity {
     private ImageButton sendButton;
     private TextView inputText;
     private Button locationButton;
+    private ValueEventListener mShareLocation;
 
     /**
      * Static method that returns intent used to start MainActivity
@@ -80,6 +88,7 @@ public class ChatActivity extends AppCompatActivity {
 
         // get the user's display name and the chatID from the intent
         mUserName = getIntent().getStringExtra("userName");
+        myUserName = mAuth.getUid();
         mChatID = getIntent().getStringExtra("chatID");
 
         // set title to include the user's display name
@@ -150,6 +159,33 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         });
+
+        DatabaseReference shareLocation = database.getReference("chats/" + mChatID + "/" + mUserName + "/location");
+
+        final Intent popupActivity = new Intent(ChatActivity.this, Popup.class);
+
+        shareLocation.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if((boolean) dataSnapshot.getValue()) {
+                    startActivityForResult(popupActivity, LOCATION);
+
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Let facebook's CallbackManager handle the login result
+        super.onActivityResult(requestCode, resultCode, data);
+        wantLocation = data.getBooleanExtra("wantLocation", true);
     }
 
     private void addMessage(Message message) {
