@@ -52,13 +52,10 @@ exports.pairUsers = functions.database.ref('chatRequests/{reqID}').onCreate((eve
             continue;
           }
 
-          // pair users if they are within MAX_DISTANCE distance
-          if (geolib.getDistance({
-            latitude: requests[i].latitude,
-            longitude: requests[i].longitude }, {
-              latitude: requests[j].latitude,
-              longitude: requests[j].longitude
-            }) <= MAX_DISTANCE) {
+          // pair users if they are within MAX_DISTANCE distance and have at least 1 common interest
+          if (withinMaxDistance(requests[i].latitude, requests[i].longitude,
+            requests[j].latitude, requests[j].longitude)
+            && commonInterests(requests[i].interests, requests[j].interests)) {
               // delete chat requests
               updates['chatRequests/' + requests[i].requestID] = null;
               updates['chatRequests/' + requests[j].requestID] = null;
@@ -95,3 +92,28 @@ exports.pairUsers = functions.database.ref('chatRequests/{reqID}').onCreate((eve
     return rootNode.update(updates);
   });
 });
+
+/**
+ * Helper function to detmine whether two locations are within MAX_DISTANCE distance
+ */
+function withinMaxDistance(user1Latitude, user1Longitude, user2Latitude, user2Longitude) {
+  if (geolib.getDistance({ latitude: user1Latitude, longitude: user1Longitude },
+    { latitude: user2Latitude, longitude: user2Longitude }) <= MAX_DISTANCE) {
+      return true;
+    }
+    return false;
+}
+
+/**
+ * Helper function to detmine whether two users have any common interests
+ */
+function commonInterests(user1Interests, user2Interests) {
+  for (let interest1 in user1Interests) {
+    for (let interest2 in user2Interests) {
+      if (interest1 === interest2) {
+        return true;
+      }
+    }
+  }
+  return false;
+}

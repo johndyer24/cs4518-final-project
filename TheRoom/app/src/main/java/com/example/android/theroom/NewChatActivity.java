@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -136,13 +137,33 @@ public class NewChatActivity extends AppCompatActivity {
                                 if (location != null) {
                                     Log.d(TAG, "we got a location");
 
-                                    // finally request a chat with the user's location data
-                                    mDatabase.child("users/" + userID + "/requestedChat").setValue(true);
-                                    String newRequestKey = mDatabase.child("chatRequests").push().getKey();
-                                    mDatabase.child("chatRequests/" + newRequestKey + "/userID").setValue(userID);
-                                    mDatabase.child("chatRequests/" + newRequestKey + "/time").setValue(ServerValue.TIMESTAMP);
-                                    mDatabase.child("chatRequests/" + newRequestKey + "/latitude").setValue(location.getLatitude());
-                                    mDatabase.child("chatRequests/" + newRequestKey + "/longitude").setValue(location.getLongitude());
+                                    final Location l = location;
+
+                                    // lookup user's interests
+                                    mDatabase.child("users/" + userID + "/interests").addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            // finally request a chat with the user's location data
+                                            mDatabase.child("users/" + userID + "/requestedChat").setValue(true);
+                                            String newRequestKey = mDatabase.child("chatRequests").push().getKey();
+                                            mDatabase.child("chatRequests/" + newRequestKey + "/userID").setValue(userID);
+                                            mDatabase.child("chatRequests/" + newRequestKey + "/time").setValue(ServerValue.TIMESTAMP);
+                                            mDatabase.child("chatRequests/" + newRequestKey + "/latitude").setValue(l.getLatitude());
+                                            mDatabase.child("chatRequests/" + newRequestKey + "/longitude").setValue(l.getLongitude());
+
+                                            // add interests data to request
+                                            for (DataSnapshot d : dataSnapshot.getChildren()) {
+                                                mDatabase.child("chatRequests/" + newRequestKey + "/interests/" + d.getKey()).setValue(true);
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
+
+
                                 } else {
                                     Log.d(TAG, "location is null");
                                 }
