@@ -160,10 +160,15 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+        locationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                firebase.child("chats/" + mChatID + "/" + mUserName + "/location").setValue(true);
+            }
+        });
+
         DatabaseReference shareLocation = database.getReference("chats/" + mChatID + "/" + mUserName + "/location");
-
         final Intent popupActivity = new Intent(ChatActivity.this, Popup.class);
-
         shareLocation.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
