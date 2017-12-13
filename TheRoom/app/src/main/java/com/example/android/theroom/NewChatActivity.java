@@ -64,7 +64,7 @@ public class NewChatActivity extends AppCompatActivity {
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        mCancelButton = (Button) findViewById(R.id.cancel_request_button);
+        //mCancelButton = (Button) findViewById(R.id.cancel_request_button);
 
         // check whether we have already sent a chat request
         userID = mAuth.getUid();
@@ -161,21 +161,39 @@ public class NewChatActivity extends AppCompatActivity {
                                     mDatabase.child("users/" + userID + "/interests").addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
-                                            // finally request a chat with the user's location data
-                                            mNewRequestKey = mDatabase.child("chatRequests").push().getKey();
-                                            mDatabase.child("users/" + userID + "/requestedChat").setValue(mNewRequestKey);
-                                            mDatabase.child("chatRequests/" + mNewRequestKey + "/userID").setValue(userID);
-                                            mDatabase.child("chatRequests/" + mNewRequestKey + "/time").setValue(ServerValue.TIMESTAMP);
-                                            mDatabase.child("chatRequests/" + mNewRequestKey + "/latitude").setValue(l.getLatitude());
-                                            mDatabase.child("chatRequests/" + mNewRequestKey + "/longitude").setValue(l.getLongitude());
 
-                                            // add interests data to request
-                                            for (DataSnapshot d : dataSnapshot.getChildren()) {
-                                                mDatabase.child("chatRequests/" + mNewRequestKey + "/interests/" + d.getKey()).setValue(true);
-                                            }
+                                            final DataSnapshot dataSnapshot1 = dataSnapshot;
 
-                                            // add listener for cancel button
-                                            //enableCancelButton();
+                                            mDatabase.child("users/" + userID + "/hasChatsWith").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(DataSnapshot dataSnapshot2) {
+                                                    // finally request a chat with the user's location data
+                                                    mNewRequestKey = mDatabase.child("chatRequests").push().getKey();
+                                                    mDatabase.child("users/" + userID + "/requestedChat").setValue(mNewRequestKey);
+                                                    mDatabase.child("chatRequests/" + mNewRequestKey + "/userID").setValue(userID);
+                                                    mDatabase.child("chatRequests/" + mNewRequestKey + "/time").setValue(ServerValue.TIMESTAMP);
+                                                    mDatabase.child("chatRequests/" + mNewRequestKey + "/latitude").setValue(l.getLatitude());
+                                                    mDatabase.child("chatRequests/" + mNewRequestKey + "/longitude").setValue(l.getLongitude());
+
+                                                    // add interests data to request
+                                                    for (DataSnapshot d : dataSnapshot1.getChildren()) {
+                                                        mDatabase.child("chatRequests/" + mNewRequestKey + "/interests/" + d.getKey()).setValue(true);
+                                                    }
+
+                                                    // add data of user's current chats to request
+                                                    for (DataSnapshot d : dataSnapshot2.getChildren()) {
+                                                        mDatabase.child("chatRequests/" + mNewRequestKey + "/hasChatsWith/" + d.getKey()).setValue(true);
+                                                    }
+
+                                                    // add listener for cancel button
+                                                    //enableCancelButton();
+                                                }
+
+                                                @Override
+                                                public void onCancelled(DatabaseError databaseError) {
+
+                                                }
+                                            });
                                         }
 
                                         @Override

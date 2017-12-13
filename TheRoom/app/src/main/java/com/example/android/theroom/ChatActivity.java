@@ -160,30 +160,30 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        locationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                firebase.child("chats/" + mChatID + "/" + myUserName + "/location").setValue(true);
-            }
-        });
-
-        DatabaseReference shareLocation = database.getReference("chats/" + mChatID + "/" + mUserName + "/location");
-        final Intent popupActivity = new Intent(ChatActivity.this, Popup.class);
-        shareLocation.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if((Boolean) dataSnapshot.getValue()) {
-                    startActivityForResult(popupActivity, LOCATION);
-
-
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+//        locationButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                firebase.child("chats/" + mChatID + "/" + myUserName + "/location").setValue(true);
+//            }
+//        });
+//
+//        DatabaseReference shareLocation = database.getReference("chats/" + mChatID + "/" + mUserName + "/location");
+//        final Intent popupActivity = new Intent(ChatActivity.this, Popup.class);
+//        shareLocation.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                if((Boolean) dataSnapshot.getValue()) {
+//                    startActivityForResult(popupActivity, LOCATION);
+//
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
     }
 
     @Override
