@@ -50,6 +50,9 @@
             android:name=".ProfileActivity"
             android:label="@string/profile_activity_title" />
         <activity
+            android:name=".OnboardingActivity"
+            android:label="@string/onboarding_activity_title" />
+        <activity
             android:name=".SettingsActivity"
             android:label="@string/settings_activity_title" />
         <activity

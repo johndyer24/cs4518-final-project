@@ -2,6 +2,8 @@ package com.example.android.theroom;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -141,10 +143,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Navigate to MainActivity
+     * Navigate to MainActivity or Onboarding if this is the user's first time using app
      */
     private void viewMainMenu() {
-        Intent i = MainActivity.newIntent(this);
+        // check shared preferences to determine whether onboarding should be skipped or not
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        boolean skipOnboarding = sharedPref.getBoolean(OnboardingActivity.SKIP_ONBOARDING, false);
+        Log.d(TAG, "SkipOnboarding: " + skipOnboarding);
+        Intent i = skipOnboarding ? MainActivity.newIntent(this) : OnboardingActivity.newIntent(this);
         startActivity(i);
         finish(); // finish LoginActivity so user can't navigate back to it
     }
