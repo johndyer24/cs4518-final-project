@@ -6,10 +6,15 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -40,6 +45,7 @@ public class OnboardingActivity extends AppCompatActivity {
 
     private Map<String, CheckBox> mCheckBoxList;
     private Button mContinueButton;
+    private EditText mEditText;
     private int mNumInterestsSelected;
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
@@ -58,6 +64,9 @@ public class OnboardingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding);
 
+        // make sure the keyboard doesn't pop up automatically
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         // get references to database and auth object
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
@@ -67,18 +76,43 @@ public class OnboardingActivity extends AppCompatActivity {
         mContinueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // use SharedPreferences to indicate onboarding should be skipped next time
-                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putBoolean(SKIP_ONBOARDING, true);
-                editor.commit();
-                // start MainActivity and finish this one
-                startActivity(MainActivity.newIntent(getApplicationContext()));
-                finish();
+                String displayName = mEditText.getText().toString();
+                if (!displayName.trim().isEmpty()) {
+                    // update user's display name
+                    mDatabase.child("users/" + mAuth.getUid() + "/displayName/").setValue(displayName);
+
+                    // use SharedPreferences to indicate onboarding should be skipped next time
+                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putBoolean(SKIP_ONBOARDING, true);
+                    editor.commit();
+
+                    // start MainActivity and finish this one
+                    startActivity(MainActivity.newIntent(getApplicationContext()));
+                    finish();
+                }
             }
         });
         mContinueButton.setVisibility(View.INVISIBLE);
         mNumInterestsSelected = 0;
+
+        mEditText = (EditText) findViewById(R.id.display_name_input);
+        mEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                updateContinueButton();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
 
         // get references to all CheckBoxes
         mCheckBoxList = new HashMap<String, CheckBox>();
@@ -148,7 +182,7 @@ public class OnboardingActivity extends AppCompatActivity {
      * Set button to visible or invisible depending on number of interests selected
      */
     private void updateContinueButton() {
-        if (mNumInterestsSelected >= 1) {
+        if (mNumInterestsSelected >= 1 && !mEditText.getText().toString().trim().equals("")) {
             mContinueButton.setVisibility(View.VISIBLE);
         } else {
             mContinueButton.setVisibility(View.GONE);

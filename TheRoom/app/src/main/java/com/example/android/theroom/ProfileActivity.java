@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -37,6 +39,7 @@ public class ProfileActivity extends AppCompatActivity {
     private Map<String, CheckBox> mCheckBoxList;
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
+    private EditText mEditText;
 
     /**
      * Static method that returns intent used to start ProfileActivity
@@ -51,6 +54,9 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
+        // make sure the keyboard doesn't pop up automatically
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         // get references to database and auth object
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -91,6 +97,35 @@ public class ProfileActivity extends AppCompatActivity {
 
             }
         });
+
+        // display user's displayName in the EditText
+        mEditText = (EditText) findViewById(R.id.display_name_profile_input);
+        mDatabase.child("users/" + mAuth.getUid() + "/displayName").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    mEditText.setText((String)dataSnapshot.getValue());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // update user's displayName
+        String displayName = mEditText.getText().toString();
+        if (!displayName.trim().isEmpty()) {
+            mDatabase.child("users/" + mAuth.getUid() + "/displayName").setValue(displayName);
+        }
     }
 
     /**

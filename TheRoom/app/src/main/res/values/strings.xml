@@ -46,6 +46,9 @@
 
     <!-- Onboarding Activity -->
     <string name="onboarding_activity_title">Onboarding</string>
+    <string name="display_name_label">Display Name</string>
+    <string name="display_name_description">Your name that other users will see.</string>
+    <string name="display_name_hint">Username</string>
     <string name="select_interests_label">Select Interests</string>
     <string name="select_interests_description">Any interests you select are used to better pair you with other users. At least one must be selected in order to match you to other users.</string>
     <string name="onboarding_continue_button">Continue</string>
