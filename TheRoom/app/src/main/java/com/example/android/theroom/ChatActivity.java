@@ -44,8 +44,9 @@ public class ChatActivity extends AppCompatActivity {
     final private FirebaseDatabase database = FirebaseDatabase.getInstance();
 
 
-    private String mUserName;
-    private String myUserName;
+    private String mUserName; // other user's ID
+    private String mDisplayName; // other user's display name
+    private String myUserName; // my user ID
     private String mChatID;
     private ChildEventListener chatListener;
     private DatabaseReference firebase;
@@ -66,9 +67,10 @@ public class ChatActivity extends AppCompatActivity {
      * @param context
      * @return
      */
-    public static Intent newIntent(Context context, String userName, String chatID) {
+    public static Intent newIntent(Context context, String userName, String displayName, String chatID) {
         Intent i = new Intent(context, ChatActivity.class);
         i.putExtra("userName", userName);
+        i.putExtra("displayName", displayName);
         i.putExtra("chatID", chatID);
         return i;
     }
@@ -88,13 +90,14 @@ public class ChatActivity extends AppCompatActivity {
 
         // get the user's display name and the chatID from the intent
         mUserName = getIntent().getStringExtra("userName");
+        mDisplayName = getIntent().getStringExtra("displayName");
         myUserName = mAuth.getUid();
         mChatID = getIntent().getStringExtra("chatID");
 
         // set title to include the user's display name
         ActionBar bar = getSupportActionBar();
         if (bar != null) {
-            bar.setTitle(getString(R.string.chat_activity_title, mUserName));
+            bar.setTitle(getString(R.string.chat_activity_title, mDisplayName));
         }
 
         // setup Adapter and RecyclerView

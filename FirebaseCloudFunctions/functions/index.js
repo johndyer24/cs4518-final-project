@@ -68,6 +68,8 @@ exports.pairUsers = functions.database.ref('chatRequests/{reqID}').onCreate((eve
               updates['chats/' + newChatID + '/startTime'] = admin.database.ServerValue.TIMESTAMP;
               updates['chats/' + newChatID + '/user1'] = requests[i].userID;
               updates['chats/' + newChatID + '/user2'] = requests[j].userID;
+              updates['chats/' + newChatID + '/user1DisplayName'] = requests[i].displayName;
+              updates['chats/' + newChatID + '/user2DisplayName'] = requests[j].displayName;
 
               // add users to newly created chat
               updates['userChats/' + requests[i].userID + '/' + newChatID] = true;

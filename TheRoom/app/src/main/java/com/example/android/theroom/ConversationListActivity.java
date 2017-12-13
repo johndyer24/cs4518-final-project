@@ -164,7 +164,7 @@ public class ConversationListActivity extends AppCompatActivity {
          */
         public void bind(Chat chat, int position) {
             mChat = chat;
-            String text = chat.getUser1().equals(mAuth.getUid()) ? chat.getUser2() : chat.getUser1();
+            String text = chat.getUser1().equals(mAuth.getUid()) ? chat.getUser2DisplayName() : chat.getUser1DisplayName();
             mTextView.setText(text);
             //mTextView.setText(getString(R.string.conversation_list_row_start_time_text, mChat.getStartTime()));
             mPosition = position;
@@ -173,7 +173,12 @@ public class ConversationListActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             // start Chat Activity
-            Intent i = ChatActivity.newIntent(getContext(), mChat.getUser1().equals(mAuth.getUid()) ? mChat.getUser2() : mChat.getUser1(), mChat.getChatID());
+            Intent i;
+            if (mChat.getUser1().equals(mAuth.getUid())) {
+                i = ChatActivity.newIntent(getContext(), mChat.getUser2(), mChat.getUser2DisplayName(), mChat.getChatID());
+            } else {
+                i = ChatActivity.newIntent(getContext(), mChat.getUser1(), mChat.getUser1DisplayName(), mChat.getChatID());
+            }
             startActivity(i);
         }
     }

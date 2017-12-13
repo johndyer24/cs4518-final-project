@@ -12,6 +12,8 @@ public class Chat {
     private Long startTime; // The time the chat was created
     private String user1;
     private String user2;
+    private String user1DisplayName;
+    private String user2DisplayName;
     private String chatID; // key of the object in firebase
 
     // Empty constructor required by firebase
@@ -46,6 +48,22 @@ public class Chat {
 
     public void setUser2(String user2) {
         this.user2 = user2;
+    }
+
+    public String getUser1DisplayName() {
+        return user1DisplayName;
+    }
+
+    public void setUser1DisplayName(String user1DisplayName) {
+        this.user1DisplayName = user1DisplayName;
+    }
+
+    public String getUser2DisplayName() {
+        return user2DisplayName;
+    }
+
+    public void setUser2DisplayName(String user2DisplayName) {
+        this.user2DisplayName = user2DisplayName;
     }
 
     public String getChatID() {
