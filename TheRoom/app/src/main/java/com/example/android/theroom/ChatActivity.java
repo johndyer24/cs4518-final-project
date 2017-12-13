@@ -159,11 +159,11 @@ public class ChatActivity extends AppCompatActivity {
                 }
             }
         });
-        /*
+
         locationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                firebase.child("chats/" + mChatID + "/" + mUserName + "/location").setValue(true);
+                firebase.child("chats/" + mChatID + "/" + myUserName + "/location").setValue(true);
             }
         });
 
@@ -172,7 +172,7 @@ public class ChatActivity extends AppCompatActivity {
         shareLocation.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if((boolean) dataSnapshot.getValue()) {
+                if((Boolean) dataSnapshot.getValue()) {
                     startActivityForResult(popupActivity, LOCATION);
 
 
@@ -183,7 +183,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });*/
+        });
     }
 
     @Override
