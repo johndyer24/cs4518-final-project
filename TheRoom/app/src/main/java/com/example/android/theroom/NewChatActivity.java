@@ -40,7 +40,7 @@ public class NewChatActivity extends AppCompatActivity {
     private String userID;
     private ValueEventListener mValueEventListener;
     private FusedLocationProviderClient mFusedLocationClient;
-    private String newRequestKey;
+    private String mNewRequestKey;
     private Location mLocation;
     private Button mCancelButton;
 
@@ -76,8 +76,8 @@ public class NewChatActivity extends AppCompatActivity {
                 if (!dataSnapshot.exists()) {
                     requestChat();
                 } else {
-                    newRequestKey = (String) dataSnapshot.getValue();
-                    enableCancelButton(); // add listener for cancel button
+                    mNewRequestKey = (String) dataSnapshot.getValue();
+                    //enableCancelButton(); // add listener for cancel button
                 }
             }
 
@@ -133,6 +133,14 @@ public class NewChatActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        mDatabase.child("chatRequests/" + mNewRequestKey).removeValue();
+        mDatabase.child("users/" + userID + "/requestedChat").removeValue();
+    }
+
     private void requestChat() {
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -154,20 +162,20 @@ public class NewChatActivity extends AppCompatActivity {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
                                             // finally request a chat with the user's location data
-                                            newRequestKey = mDatabase.child("chatRequests").push().getKey();
-                                            mDatabase.child("users/" + userID + "/requestedChat").setValue(newRequestKey);
-                                            mDatabase.child("chatRequests/" + newRequestKey + "/userID").setValue(userID);
-                                            mDatabase.child("chatRequests/" + newRequestKey + "/time").setValue(ServerValue.TIMESTAMP);
-                                            mDatabase.child("chatRequests/" + newRequestKey + "/latitude").setValue(l.getLatitude());
-                                            mDatabase.child("chatRequests/" + newRequestKey + "/longitude").setValue(l.getLongitude());
+                                            mNewRequestKey = mDatabase.child("chatRequests").push().getKey();
+                                            mDatabase.child("users/" + userID + "/requestedChat").setValue(mNewRequestKey);
+                                            mDatabase.child("chatRequests/" + mNewRequestKey + "/userID").setValue(userID);
+                                            mDatabase.child("chatRequests/" + mNewRequestKey + "/time").setValue(ServerValue.TIMESTAMP);
+                                            mDatabase.child("chatRequests/" + mNewRequestKey + "/latitude").setValue(l.getLatitude());
+                                            mDatabase.child("chatRequests/" + mNewRequestKey + "/longitude").setValue(l.getLongitude());
 
                                             // add interests data to request
                                             for (DataSnapshot d : dataSnapshot.getChildren()) {
-                                                mDatabase.child("chatRequests/" + newRequestKey + "/interests/" + d.getKey()).setValue(true);
+                                                mDatabase.child("chatRequests/" + mNewRequestKey + "/interests/" + d.getKey()).setValue(true);
                                             }
 
                                             // add listener for cancel button
-                                            enableCancelButton();
+                                            //enableCancelButton();
                                         }
 
                                         @Override
@@ -224,16 +232,16 @@ public class NewChatActivity extends AppCompatActivity {
     /**
      * Sets onClickListener for the cancel button
      */
-    private void enableCancelButton() {
-        mCancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "newRequestKey: " + newRequestKey);
-                // delete request
-                mDatabase.child("chatRequests/" + newRequestKey).removeValue();
-                mDatabase.child("users/" + userID + "/requestedChat").removeValue();
-                finish(); // close activity
-            }
-        });
-    }
+//    private void enableCancelButton() {
+//        mCancelButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Log.d(TAG, "newRequestKey: " + mNewRequestKey);
+//                // delete request
+//                mDatabase.child("chatRequests/" + mNewRequestKey).removeValue();
+//                mDatabase.child("users/" + userID + "/requestedChat").removeValue();
+//                finish(); // close activity
+//            }
+//        });
+//    }
 }
