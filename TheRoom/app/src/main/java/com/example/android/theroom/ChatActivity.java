@@ -311,15 +311,14 @@ public class ChatActivity extends AppCompatActivity {
 
             Log.i("AE",mAuth.getUid() + " " + message.getUserID());
 
-            if(mAuth.getUid().equals(message.getUserID())){
-                mTextViewLeft.setVisibility(TextView.INVISIBLE);
-                mTextViewRight.setVisibility(TextView.VISIBLE);
-                mTextViewRight.setText(text);
-
-            }else{
+            if(!mAuth.getUid().equals(message.getUserID())){
                 mTextViewLeft.setVisibility(TextView.VISIBLE);
                 mTextViewRight.setVisibility(TextView.INVISIBLE);
                 mTextViewLeft.setText(text);
+            }else{
+                mTextViewLeft.setVisibility(TextView.INVISIBLE);
+                mTextViewRight.setVisibility(TextView.VISIBLE);
+                mTextViewRight.setText(text);
             }
         }
 
