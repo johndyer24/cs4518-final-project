@@ -136,6 +136,12 @@ public class ChatActivity extends AppCompatActivity {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     Log.d("ChatActivity", dataSnapshot.getKey());
+
+                    for (DataSnapshot d : dataSnapshot.getChildren()) {
+                        if (d.getValue() instanceof String) {
+                            Log.d("datasnapshot info", (String) d.getValue());
+                        }
+                    }
                     Message message = (Message) dataSnapshot.getValue(Message.class);
 
                     addMessage(message);
@@ -169,7 +175,6 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(!inputText.getText().toString().trim().equals("")) {
                     String newKey = firebase.child(MSG + mChatID).push().getKey();
-                    Log.d("ChatActivity", mAuth.getUid());
                     firebase.child(MSG + mChatID + "/" + newKey + "/text").setValue(inputText.getText().toString());
                     firebase.child(MSG + mChatID + "/" + newKey + "/time").setValue(ServerValue.TIMESTAMP);
                     firebase.child(MSG + mChatID + "/" + newKey + "/userID").setValue(mAuth.getUid());
@@ -312,6 +317,9 @@ public class ChatActivity extends AppCompatActivity {
             mPosition = position;
 
             Log.i("AE",mAuth.getUid() + " " + message.getUserID());
+
+            Log.d("chatactivity", "user id: " + mAuth.getUid());
+            Log.d("chatactivity", "user id of message: " + message.getUserID());
 
             if(!mAuth.getUid().equals(message.getUserID())){
                 mTextViewLeft.setVisibility(TextView.VISIBLE);
