@@ -63,12 +63,8 @@
             android:name=".ChatActivity"
             android:label="@string/chat_activity_title" />
         <activity
-            android:name=".LocationActivity"
-            android:label="@string/location_activity_title"></activity>
-        <activity
             android:name=".Popup"
             android:label="The Room" />
-        <activity android:name=".MapActivity"></activity>
     </application>
 
 </manifest>

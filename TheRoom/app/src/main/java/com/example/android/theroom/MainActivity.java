@@ -39,9 +39,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.settings:
-                viewSettings();
-                return true;
+//            case R.id.settings:
+//                viewSettings();
+//                return true;
             case R.id.sign_out:
                 signOut();
                 return true;

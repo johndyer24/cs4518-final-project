@@ -72,13 +72,11 @@ public class ChatActivity extends AppCompatActivity {
     private FusedLocationProviderClient mFusedLocationClient;
 
     private UltimateRecyclerView mMessageRecyclerView;
-    private TextView mLoadingTextView;
     private ChatAdapter mAdapter;
     private List<Message> mMessagesList;
     private ImageButton sendButton;
     private TextView inputText;
     private Button locationButton;
-    private ValueEventListener mShareLocation;
 
     /**
      * Static method that returns intent used to start ChatActivity
@@ -185,17 +183,11 @@ public class ChatActivity extends AppCompatActivity {
         locationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 getLocationAndShare();
-
-//                firebase.child("chats/" + mChatID + "/" + myUserName + "/location").setValue(true);
-//                Intent i = LocationActivity.newIntent(getApplicationContext(), mDisplayName, mUserName, mChatID, true);
-//                startActivity(i);
             }
         });
 
         DatabaseReference shareLocation = database.getReference("chats/" + mChatID + "/" + mUserName + "/sharedLocation");
-        final Intent popupActivity = new Intent(ChatActivity.this, Popup.class);
         shareLocation.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -229,7 +221,7 @@ public class ChatActivity extends AppCompatActivity {
                             Log.d("MapActivity", "Latitude: " + location.getLatitude());
                             Log.d("MapActivity", "Longitude: " + location.getLongitude());
 
-                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:<" + location.getLatitude() + ">,<" + location.getLongitude() + ">?q=<" + location.getLatitude() + ">,<" + location.getLongitude() + ">(Label+" + mDisplayName + "\'s Location)"));
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:<" + location.getLatitude() + ">,<" + location.getLongitude() + ">?q=<" + location.getLatitude() + ">,<" + location.getLongitude() + ">(" + mDisplayName + "\'s Location)"));
                             startActivity(intent);
                         }
 
@@ -248,16 +240,6 @@ public class ChatActivity extends AppCompatActivity {
     private void addMessage(Message message) {
         // add Message to top of list, so that most recent message is always displayed
         mMessagesList.add(0, message);
-//        mMessagesList.sort(new Comparator<Message>() {
-//            @Override
-//            public int compare(Message m1, Message m2) {
-//                if (m1.getTime() < m2.getTime()) {
-//                    return 1;
-//                } else {
-//                    return -1;
-//                }
-//            }
-//        });
         mAdapter.setMessages(mMessagesList);
         mAdapter.notifyDataSetChanged();
 
