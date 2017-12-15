@@ -1,13 +1,20 @@
 package com.example.android.theroom;
 
+import android.*;
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.example.android.theroom.models.Popup;
-import com.google.firebase.FirebaseApp;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -33,6 +40,7 @@ import com.marshalchen.ultimaterecyclerview.UltimateRecyclerviewViewHolder;
 import com.marshalchen.ultimaterecyclerview.UltimateViewAdapter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -41,6 +49,7 @@ public class ChatActivity extends AppCompatActivity {
     private static final String MSG = "messages/";
     private static int NUM_MESSAGES_TO_SHOW_LOCATION_BUTTON = 10;
     private static int LOCATION = 0;
+    private static final int REQUEST_LOCATION = 1;
     final private FirebaseDatabase database = FirebaseDatabase.getInstance();
 
 
@@ -52,6 +61,7 @@ public class ChatActivity extends AppCompatActivity {
     private DatabaseReference firebase;
     private FirebaseAuth mAuth;
     private boolean wantLocation;
+    private FusedLocationProviderClient mFusedLocationClient;
 
     private UltimateRecyclerView mMessageRecyclerView;
     private TextView mLoadingTextView;
@@ -63,7 +73,7 @@ public class ChatActivity extends AppCompatActivity {
     private ValueEventListener mShareLocation;
 
     /**
-     * Static method that returns intent used to start MainActivity
+     * Static method that returns intent used to start ChatActivity
      * @param context
      * @return
      */
@@ -87,6 +97,7 @@ public class ChatActivity extends AppCompatActivity {
 
         firebase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         // get the user's display name and the chatID from the intent
         mUserName = getIntent().getStringExtra("userName");
@@ -163,48 +174,96 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-//        locationButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
+        locationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                getLocationAndShare();
+
 //                firebase.child("chats/" + mChatID + "/" + myUserName + "/location").setValue(true);
-//            }
-//        });
-//
-//        DatabaseReference shareLocation = database.getReference("chats/" + mChatID + "/" + mUserName + "/location");
-//        final Intent popupActivity = new Intent(ChatActivity.this, Popup.class);
-//        shareLocation.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                if((Boolean) dataSnapshot.getValue()) {
-//                    startActivityForResult(popupActivity, LOCATION);
-//
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
+//                Intent i = LocationActivity.newIntent(getApplicationContext(), mDisplayName, mUserName, mChatID, true);
+//                startActivity(i);
+            }
+        });
+
+        DatabaseReference shareLocation = database.getReference("chats/" + mChatID + "/" + mUserName + "/sharedLocation");
+        final Intent popupActivity = new Intent(ChatActivity.this, Popup.class);
+        shareLocation.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    if((boolean) dataSnapshot.getValue()) {
+                        Intent i = Popup.newIntent(getApplicationContext(), mDisplayName, mUserName, mChatID);
+                        startActivityForResult(i, LOCATION);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Let facebook's CallbackManager handle the login result
         super.onActivityResult(requestCode, resultCode, data);
-        wantLocation = data.getBooleanExtra("wantLocation", true);
+        if (requestCode == LOCATION) {
+            wantLocation = data.getBooleanExtra("wantLocation", false);
+
+            if (wantLocation) {
+                Intent i = MapActivity.newIntent(this, mDisplayName, mUserName, mChatID);
+                startActivity(i);
+            }
+        }
+
     }
 
     private void addMessage(Message message) {
         // add Message to top of list, so that most recent message is always displayed
         mMessagesList.add(0, message);
+//        mMessagesList.sort(new Comparator<Message>() {
+//            @Override
+//            public int compare(Message m1, Message m2) {
+//                if (m1.getTime() < m2.getTime()) {
+//                    return 1;
+//                } else {
+//                    return -1;
+//                }
+//            }
+//        });
         mAdapter.setMessages(mMessagesList);
         mAdapter.notifyDataSetChanged();
 
         // when users have sent enough messages, give them the option to share their location
         if (mMessagesList.size() >= NUM_MESSAGES_TO_SHOW_LOCATION_BUTTON) {
             locationButton.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void getLocationAndShare() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, REQUEST_LOCATION);
+        } else {
+            mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        firebase.child("chats/" + mChatID + "/" + myUserName + "/sharedLocation").setValue(true);
+                        firebase.child("chats/" + mChatID + "/" + myUserName + "/location/latitude").setValue(location.getLatitude());
+                        firebase.child("chats/" + mChatID + "/" + myUserName + "/location/longitude").setValue(location.getLongitude());
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch(requestCode) {
+            case REQUEST_LOCATION:
+                getLocationAndShare();
         }
     }
 
