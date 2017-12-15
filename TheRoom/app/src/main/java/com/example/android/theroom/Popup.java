@@ -79,6 +79,7 @@ public class Popup extends Activity{
                 Intent intent = new Intent();
                 intent.putExtra("wantLocation", wantLocation); //value should be your string from the edittext
                 setResult(1, intent); //The data you want to send back
+                firebase.child("chats/" + mChatID + "/" + mPartnerID + "/sharedLocation").setValue(false);
                 finish();
             }
         });
