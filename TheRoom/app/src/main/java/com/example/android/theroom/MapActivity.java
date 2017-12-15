@@ -56,7 +56,7 @@ public class MapActivity extends AppCompatActivity {
             bar.setTitle(getString(R.string.map_activity_title, mPartnerDisplayName));
         }
 
-        mDatabase.child("chats/" + mChatID + "/" + mAuth.getUid() + "/location").addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("chats/" + mChatID + "/" + mPartnerID + "/location").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
