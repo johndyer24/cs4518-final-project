@@ -65,9 +65,9 @@ public class Popup extends Activity{
             public void onClick(View view) {
                 wantLocation = true;
                 Intent intent = new Intent();
-                intent.putExtra("wantLocation", wantLocation); //value should be your string from the edittext
+                intent.putExtra("wantLocation", wantLocation);
                 setResult(1, intent); //The data you want to send back
-                firebase.child("chats/" + mChatID + "/" + mPartnerID + "/sharedLocation").setValue(false);
+                firebase.child("chats/" + mChatID + "/" + mPartnerID + "/sharedLocation").setValue(null);
                 finish();
             }
         });
@@ -77,9 +77,9 @@ public class Popup extends Activity{
             public void onClick(View view) {
                 wantLocation = false;
                 Intent intent = new Intent();
-                intent.putExtra("wantLocation", wantLocation); //value should be your string from the edittext
+                intent.putExtra("wantLocation", wantLocation);
                 setResult(1, intent); //The data you want to send back
-                firebase.child("chats/" + mChatID + "/" + mPartnerID + "/sharedLocation").setValue(false);
+                firebase.child("chats/" + mChatID + "/" + mPartnerID + "/sharedLocation").setValue(null);
                 finish();
             }
         });
