@@ -24,16 +24,16 @@ import java.util.Map;
 public class ProfileActivity extends AppCompatActivity {
 
     private static final String[] interests = {
-            "interest1",
-            "interest2",
-            "interest3",
-            "interest4",
-            "interest5",
-            "interest6",
-            "interest7",
-            "interest8",
-            "interest9",
-            "interest10"
+            "sports",
+            "music",
+            "videoGames",
+            "food",
+            "dancing",
+            "opera",
+            "cars",
+            "books",
+            "programming",
+            "fashion"
     };
 
     private Map<String, CheckBox> mCheckBoxList;
