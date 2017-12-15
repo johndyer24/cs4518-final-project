@@ -5,8 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
+    android:gravity="center|top"
+    android:layout_marginTop="20dp"
     tools:context="com.example.android.theroom.MainActivity">
+
+    <ImageView
+        android:layout_width="243dp"
+        android:layout_height="206dp"
+        android:src="@drawable/applogo"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
