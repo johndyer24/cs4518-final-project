@@ -6,12 +6,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.example.android.theroom.models.UserLocation;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -213,8 +215,25 @@ public class ChatActivity extends AppCompatActivity {
             wantLocation = data.getBooleanExtra("wantLocation", false);
 
             if (wantLocation) {
-                Intent i = MapActivity.newIntent(this, mDisplayName, mUserName, mChatID);
-                startActivity(i);
+                firebase.child("chats/" + mChatID + "/" + mUserName + "/location").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            UserLocation location = dataSnapshot.getValue(UserLocation.class);
+                            Log.d("MapActivity", "Latitude: " + location.getLatitude());
+                            Log.d("MapActivity", "Longitude: " + location.getLongitude());
+
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:<" + location.getLatitude() + ">,<" + location.getLongitude() + ">?q=<" + location.getLatitude() + ">,<" + location.getLongitude() + ">(Label+" + mDisplayName + "\'s Location)"));
+                            startActivity(intent);
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
             }
         }
 
