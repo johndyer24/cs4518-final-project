@@ -2,12 +2,13 @@ package com.example.android.theroom;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.example.android.theroom.models.Popup;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -22,6 +23,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.android.theroom.models.Message;
@@ -41,6 +43,8 @@ public class ChatActivity extends AppCompatActivity {
     private static final String MSG = "messages/";
     private static int NUM_MESSAGES_TO_SHOW_LOCATION_BUTTON = 10;
     private static int LOCATION = 0;
+    private static int MESSAGE_RECIEVED = 1;
+    private static int MESSAGE_SENT = 0;
     final private FirebaseDatabase database = FirebaseDatabase.getInstance();
 
 
@@ -143,7 +147,7 @@ public class ChatActivity extends AppCompatActivity {
 
                 }
             };
-            firebase.child(MSG + mChatID).addChildEventListener(chatListener);
+            firebase.child(MSG + mChatID).orderByChild("time").addChildEventListener(chatListener);
         }
 
         sendButton.setOnClickListener(new View.OnClickListener() {
@@ -220,14 +224,16 @@ public class ChatActivity extends AppCompatActivity {
      */
     private class ChatHolder extends UltimateRecyclerviewViewHolder implements View.OnClickListener {
 
-        private TextView mTextView;
+        private TextView mTextViewLeft;
+        private TextView mTextViewRight;
         private Message mMessage;
         private int mPosition;
 
         public ChatHolder(View itemView) {
             super(itemView);
 
-            mTextView = (TextView) itemView.findViewById(R.id.message_list_row_textview);
+            mTextViewLeft = (TextView) itemView.findViewById(R.id.message_list_row_textview_left);
+            mTextViewRight = (TextView) itemView.findViewById(R.id.message_list_row_textview_right);
             itemView.setOnClickListener(this);
         }
 
@@ -239,8 +245,20 @@ public class ChatActivity extends AppCompatActivity {
         public void bind(Message message, int position) {
             mMessage = message;
             String text = mMessage.getText();
-            mTextView.setText(text);
             mPosition = position;
+
+            Log.i("AE",mAuth.getUid() + " " + message.getUserID());
+
+            if(mAuth.getUid().equals(message.getUserID())){
+                mTextViewLeft.setVisibility(TextView.INVISIBLE);
+                mTextViewRight.setVisibility(TextView.VISIBLE);
+                mTextViewRight.setText(text);
+
+            }else{
+                mTextViewLeft.setVisibility(TextView.VISIBLE);
+                mTextViewRight.setVisibility(TextView.INVISIBLE);
+                mTextViewLeft.setText(text);
+            }
         }
 
         @Override
@@ -266,8 +284,9 @@ public class ChatActivity extends AppCompatActivity {
 
         @Override
         public ChatActivity.ChatHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.message_list_row, parent, false);
+            View v;
+            v = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_list_row, parent, false);
+
             ChatActivity.ChatHolder vh = new ChatActivity.ChatHolder(v);
             return vh;
         }
@@ -322,6 +341,7 @@ public class ChatActivity extends AppCompatActivity {
                 return mMessages.size();
             }
         }
+
 
         @Override
         public long generateHeaderId(int position) {
