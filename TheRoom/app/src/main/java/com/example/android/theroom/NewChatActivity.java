@@ -251,6 +251,12 @@ public class NewChatActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Chat c = dataSnapshot.getValue(Chat.class);
                 c.setChatID(dataSnapshot.getKey());
+                Log.d(TAG, etChatID());
+                Log.d(TAG, c.getUser1());
+                Log.d(TAG, c.getUser2());
+                Log.d(TAG, c.getUser1DisplayName());
+                Log.d(TAG, c.getUser2DisplayName());
+
                 Intent i;
                 if (c.getUser1().equals(mAuth.getUid())) {
                     i = ChatActivity.newIntent(getApplicationContext(), c.getUser2(), c.getUser2DisplayName(), c.getChatID());
