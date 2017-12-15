@@ -47,6 +47,5 @@ configurations.all {
     }
 }
 
-
 // required for firebase
 apply plugin: 'com.google.gms.google-services'

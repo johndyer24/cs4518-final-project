@@ -61,5 +61,15 @@
     <string name="sign_out">Sign Out</string>
 
     <string name="TestText">Test Text</string>
+=======
+    <!-- Location Activity -->
+    <string name="location_activity_title">Share Location</string>
+    <string name="confirm_share_location_button">Share Location</string>
+    <string name="cancel_share_location_button">Share Location</string>
+    <string name="share_location_initial_message">Do you want to share your location with %1$s so that you can meet?</string>
+    <string name="share_location_waiting_message">Waiting for %1$s to accept location sharing...</string>
+    <string name="share_location_confirm_message">%1$s has requested to share their location with you so that you can meet. Do you want to share your location?</string>
+
+    <string name="map_activity_title">%1$s\'s Location</string>
 
 </resources>
