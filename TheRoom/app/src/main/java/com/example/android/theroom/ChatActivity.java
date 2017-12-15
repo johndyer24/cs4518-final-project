@@ -16,6 +16,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.example.android.theroom.models.Chat;
 import com.example.android.theroom.models.UserLocation;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -168,6 +169,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(!inputText.getText().toString().trim().equals("")) {
                     String newKey = firebase.child(MSG + mChatID).push().getKey();
+                    Log.d("ChatActivity", mAuth.getUid());
                     firebase.child(MSG + mChatID + "/" + newKey + "/text").setValue(inputText.getText().toString());
                     firebase.child(MSG + mChatID + "/" + newKey + "/time").setValue(ServerValue.TIMESTAMP);
                     firebase.child(MSG + mChatID + "/" + newKey + "/userID").setValue(mAuth.getUid());
