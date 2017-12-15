@@ -48,7 +48,9 @@ import com.marshalchen.ultimaterecyclerview.UltimateViewAdapter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class ChatActivity extends AppCompatActivity {
@@ -175,9 +177,11 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(!inputText.getText().toString().trim().equals("")) {
                     String newKey = firebase.child(MSG + mChatID).push().getKey();
-                    firebase.child(MSG + mChatID + "/" + newKey + "/text").setValue(inputText.getText().toString());
-                    firebase.child(MSG + mChatID + "/" + newKey + "/time").setValue(ServerValue.TIMESTAMP);
-                    firebase.child(MSG + mChatID + "/" + newKey + "/userID").setValue(mAuth.getUid());
+                    Map<String, Object> message = new HashMap<>();
+                    message.put("text", inputText.getText().toString());
+                    message.put("time", ServerValue.TIMESTAMP);
+                    message.put("userID", mAuth.getUid());
+                    firebase.child((MSG + mChatID + "/" + newKey)).setValue(message);
                     inputText.setText("");
 
                     // hide keyboard if it's shown
